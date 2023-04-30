@@ -13,7 +13,7 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class ChargeEnseignantServices {
-    private final EnseignantRepository enseignantRepository;
+   /* private final EnseignantRepository enseignantRepository;
 
 
     public Enseignant getEnseignant(Long userId) {
@@ -60,5 +60,5 @@ public class ChargeEnseignantServices {
             }
             enseignant.setEmail(email);
         }
-    }
+    }*/
 }

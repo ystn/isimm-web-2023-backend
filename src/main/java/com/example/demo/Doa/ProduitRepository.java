@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProduitRepository extends JpaRepository<Produit, Long> {
-
+	public Produit findByRefStockable(String refStockable);
 
 }

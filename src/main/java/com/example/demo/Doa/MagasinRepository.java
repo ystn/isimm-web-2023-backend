@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface MagasinRepository extends JpaRepository<Magasin, Long> {
 
-
+	public Magasin findByName(String name);
 
 
 }

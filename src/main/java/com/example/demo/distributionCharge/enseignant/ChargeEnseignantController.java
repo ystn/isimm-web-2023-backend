@@ -11,7 +11,7 @@ import java.util.List;
 @RestController
 @RequestMapping("api/isimm/distributionCharge/enseignant")
 
-public class ChargeEnseignantController {
+public class ChargeEnseignantController {/*
 
     private final ChargeEnseignantServices enseignantService;
 
@@ -46,5 +46,5 @@ public class ChargeEnseignantController {
             @RequestParam(required=false) String email){
         enseignantService.updateEnseignant(enseignantId,phone,email);
     }
-
+         */
 }
