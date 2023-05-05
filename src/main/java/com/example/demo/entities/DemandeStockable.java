@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -14,15 +16,18 @@ public class DemandeStockable implements Serializable {
 	private Long idDemandeStockable;
 	@Column(length=100)
 	private String Description;
-	private enum Etat {approved,rejected,pending};
+	public enum Etat {approved,rejected,pending,fullfield};
 	private Etat etat;
 	@OneToMany(mappedBy="demandeStockable")
 	private Collection<DemandeUnStockable> DemandeUnStockables=new HashSet<DemandeUnStockable>();
-
+	@JsonIgnore
+	@ManyToOne
+	@JoinColumn(name="service")
+	private Service service =new Service();
 	@ManyToOne
 	@JsonBackReference
 	@JoinColumn(name="id_employer")
-	private Employer employer;
+	private Employer employer=new Employer();
 
 
 
@@ -32,6 +37,22 @@ public class DemandeStockable implements Serializable {
 	public DemandeStockable(String description, Etat etat) {
 		Description = description;
 		this.etat = etat;
+	}
+	public Service getService()
+	{
+		return service;
+	}
+	public void setService(Service service)
+	{
+		this.service=service;
+	}
+	public Employer getEmployer()
+	{
+		return employer;
+	}
+	public void setEmployer(Employer employer)
+	{
+		this.employer=employer;
 	}
 	public String getDescription() {
 		return Description;

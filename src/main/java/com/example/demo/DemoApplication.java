@@ -2,10 +2,14 @@ package com.example.demo;
 
 import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 
+import com.example.demo.Doa.DemandeStockableRepository;
+import com.example.demo.Doa.DemandeUnstockableRepository;
+import com.example.demo.Doa.EmployerRepository;
 import com.example.demo.Doa.FactureRepository;
 import com.example.demo.Doa.FactureStockableRepository;
 import com.example.demo.Doa.FournisseurRepository;
@@ -13,6 +17,7 @@ import com.example.demo.Doa.MagasinRepository;
 import com.example.demo.Doa.ProduitRepository;
 import com.example.demo.Doa.PropriteRepository;
 import com.example.demo.Doa.ServiceRepository;
+import com.example.demo.entities.Employer;
 import com.example.demo.entities.Facture;
 import com.example.demo.entities.FactureStockable;
 import com.example.demo.entities.Fournisseur;
@@ -35,6 +40,9 @@ public class DemoApplication {
 		FactureStockableRepository FactureStockableDao=  ctx.getBean(FactureStockableRepository.class);
 		FactureRepository FactureDao = ctx.getBean(FactureRepository.class);
 		FournisseurRepository  FournisseurDao =ctx.getBean(FournisseurRepository.class);
+		 DemandeStockableRepository DemandeStockableDao =ctx.getBean(DemandeStockableRepository.class);  ;
+		DemandeUnstockableRepository DemandeUnStockableDao = ctx.getBean(DemandeUnstockableRepository.class);
+		EmployerRepository EmployerDao =ctx.getBean(EmployerRepository.class);  ;
  		Magasin magasin=new Magasin("mmmm");
  		Service s= new Service("s1");
  		s.setMagasin(magasin);
@@ -55,6 +63,9 @@ public class DemoApplication {
 		PropriteDao.save(new Proprite("ddd","dede", p1));
 		ProduitDao.save(new Produit("p2",70.0,magasin,"8878"));
 		ProduitDao.save(new Produit("p3",30.0,magasin,"456"));
+		Employer e=new Employer();
+		e.setId(new Long(1));
+		EmployerDao.save(e);
 		ProduitDao.findAll().forEach(t->System.out.println(t.getName()));
 		PropriteDao.findAll().forEach(t->System.out.println(t.getProduit().getName()));
 		System.out.println("this is"+ProduitDao.findByRefStockable("56565656").getRefStockable());

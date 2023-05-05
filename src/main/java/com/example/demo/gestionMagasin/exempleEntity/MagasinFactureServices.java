@@ -129,16 +129,17 @@ public class MagasinFactureServices {
 		ufacture.getFactureStockables().forEach(ff->FactureStockableDao.save(ff));
 		facture.setFactureStockables(ufacture.getFactureStockables());
 		facture.getFactureStockables().forEach(ff->ff.setFacture(facture));
-		Fournisseur f= FournisseurDao.findByName(ufacture.getFournisseur().getName());
-		if(f!=null) {
-			facture.getFournisseur().setIdFournisseur(f.getIdFournisseur());	
+		try{
+		Fournisseur f= FournisseurDao.findById(ufacture.getFournisseur().getIdFournisseur()).get();
+			facture.setFournisseur(f);
+
 		}
-		else {
+		catch(Exception e){
 			respJsonOutput.clear();
 
 		      respJsonOutput.put("status", 0);
 
-		      respJsonOutput.put("message", "fournisseur not found with name"+facture.getFournisseur().getName());
+		      respJsonOutput.put("message", "fournisseur not found with id : "+ufacture.getFournisseur().getIdFournisseur());
 
 		      return new ResponseEntity < > (respJsonOutput, HttpStatus.NOT_FOUND);
 		}
@@ -165,10 +166,9 @@ public class MagasinFactureServices {
 	public ResponseEntity < ? > addFacture(Facture  facture) {
 		System.out.println(facture);
 	    Map < String, Object > respJsonOutput = new LinkedHashMap < String, Object > ();
-
-		Fournisseur f= FournisseurDao.findByName(facture.getFournisseur().getName());
-		if(f!=null)
-		{ try {
+	    try {
+		Fournisseur f= FournisseurDao.findById(facture.getFournisseur().getIdFournisseur()).get();
+		try {
 			facture.getFactureStockables().forEach(ff->{
 				
 				Produit p=ProduitDao.findByRefStockable(ff.getStockable().getRefStockable());
@@ -201,12 +201,12 @@ public class MagasinFactureServices {
 		}
 			
 		}
-		else {
+		catch(Exception e) {
 			respJsonOutput.clear();
 
 		      respJsonOutput.put("status", 0);
 
-		      respJsonOutput.put("message", "fournisseur not found with name"+facture.getFournisseur().getName());
+		      respJsonOutput.put("message", "fournisseur not found with Id"+facture.getFournisseur().getIdFournisseur());
 
 		      return new ResponseEntity < > (respJsonOutput, HttpStatus.NOT_FOUND);
 		}

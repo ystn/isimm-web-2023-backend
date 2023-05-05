@@ -24,10 +24,7 @@ public class DemandeUnStockable implements Serializable {
 	@JoinColumn(name="demandeStockable")
 	private DemandeStockable demandeStockable;
 
-	@ManyToOne
-	@JsonBackReference
-	@JoinColumn(name="id_employer")
-	private Employer employer;
+	
 	public DemandeUnStockable() {
 		
 	}

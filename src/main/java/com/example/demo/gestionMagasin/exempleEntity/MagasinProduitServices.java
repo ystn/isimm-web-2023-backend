@@ -93,13 +93,38 @@ public class MagasinProduitServices {
 		 try {
 		Optional<Produit> oProduit =  ProduitDao.findById(id); 
 		Produit produit = oProduit.get(); 
+		try{
+		Magasin m=MagasinDao.findById(uproduit.getMagasin().getIdMagasin()).get();
+		produit.setMagasin(m);
+		}catch(Exception e){
+			System.out.println(MagasinDao.count());
+			System.out.println(produit.getMagasin().getName());
+			respJsonOutput.clear();
+
+		      respJsonOutput.put("status", 0);
+
+		      respJsonOutput.put("message", "magasin not found with id"+uproduit.getMagasin().getIdMagasin());
+
+		      return new ResponseEntity < > (respJsonOutput, HttpStatus.NOT_FOUND);
+			
+		}
+		Produit pt=ProduitDao.findByRefStockable(uproduit.getRefStockable());
+		if(pt!=null && pt.getIdStockable()!=id)
+		{
+			respJsonOutput.clear();
+
+		      respJsonOutput.put("status", 0);
+
+		      respJsonOutput.put("message", "Produit found with ref:"+uproduit.getRefStockable());
+
+		      return new ResponseEntity < > (respJsonOutput, HttpStatus.NOT_FOUND);
+		}
         produit.getProprites().forEach(p->PropriteDao.delete(p));	
 		uproduit.getProprites().forEach(p->PropriteDao.save(p));
 		produit.setProprites(uproduit.getProprites());
 		produit.getProprites().forEach(p->p.setProduit(produit)); 
 		produit.setName(uproduit.getName());
-		produit.setTva(uproduit.getTva());
-		produit.getMagasin().setName(uproduit.getMagasin().getName());
+		produit.setTva(uproduit.getTva());	
 		produit.setRefStockable(uproduit.getRefStockable());
 		Produit pp=ProduitDao.save( produit); 
 		respJsonOutput.put("status", 1);
@@ -138,9 +163,21 @@ public class MagasinProduitServices {
 				 }
 	}
 	public ResponseEntity < ? > addProduit(Produit produit) {
-		Magasin m=MagasinDao.findByName(produit.getMagasin().getName());
 	    Map < String, Object > respJsonOutput = new LinkedHashMap < String, Object > ();
-		if(m!=null) {	produit.getMagasin().setIdMagasin(m.getIdMagasin());
+		try{
+		Magasin m=MagasinDao.findById(produit.getMagasin().getIdMagasin()).get();
+		produit.setMagasin(m);
+		Produit pt=ProduitDao.findByRefStockable(produit.getRefStockable());
+		if(pt!=null)
+		{
+			respJsonOutput.clear();
+
+		      respJsonOutput.put("status", 0);
+
+		      respJsonOutput.put("message", "Produit found with ref:"+produit.getRefStockable());
+
+		      return new ResponseEntity < > (respJsonOutput, HttpStatus.NOT_FOUND);
+		}
 		produit.getProprites().forEach(p->PropriteDao.save(p));
 		produit.getProprites().forEach(p->p.setProduit(produit));
 		 Produit pp=ProduitDao.save( produit);           
@@ -149,19 +186,19 @@ public class MagasinProduitServices {
 	    respJsonOutput.put("message", "Record is Saved Successfully!");
 	    respJsonOutput.put("Body",pp);
 	    return new ResponseEntity < > (respJsonOutput, HttpStatus.CREATED);
-		}
-		else {
+		}catch(Exception e){
 			System.out.println(MagasinDao.count());
 			System.out.println(produit.getMagasin().getName());
 			respJsonOutput.clear();
 
 		      respJsonOutput.put("status", 0);
 
-		      respJsonOutput.put("message", "magasin not found with name"+produit.getMagasin().getName());
+		      respJsonOutput.put("message", "magasin not found with id"+produit.getMagasin().getIdMagasin());
 
 		      return new ResponseEntity < > (respJsonOutput, HttpStatus.NOT_FOUND);
 			
 		}
+		
 		  
 	}
 	public ResponseEntity < ? > deleteProduit(Long id)
