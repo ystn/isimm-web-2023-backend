@@ -57,7 +57,7 @@ public class MagasinDemandeStockableServices {
 
 		      respJsonOutput.put("status", 0);
 
-		      respJsonOutput.put("message", "There is No Factures Data exists ");
+		      respJsonOutput.put("message", "There is No Demandes Data exists ");
 		      respJsonOutput.put("Body",DemandeStockables );
 
 		      return new ResponseEntity < > (respJsonOutput, HttpStatus.NOT_FOUND);

@@ -82,7 +82,13 @@ public class Employer  extends Personne {
 
     }
 
-    public void addDemandeConger(DemandeConger demandeConger) {
+    public Set<DemandeStockable> getDemandeStockable() {
+		return demandeStockable;
+	}
+	public void setDemandeStockable(Set<DemandeStockable> demandeStockable) {
+		this.demandeStockable = demandeStockable;
+	}
+	public void addDemandeConger(DemandeConger demandeConger) {
         this.demandeConger.add(demandeConger);
 
     }
