@@ -3,6 +3,7 @@ package com.example.demo.entities;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -25,16 +26,16 @@ import jakarta.persistence.OneToOne;
 public class Stockable implements Serializable {
 	@Id @GeneratedValue
 	private Long idStockable;
-
+    
 	@Column
 	private String refStockable;
 	@Column(length=100)
 	private String name;
-	private Double tva;
 	@ManyToOne
 	@JoinColumn(name="magasin")
 	private Magasin magasin;
-
+    private Long quantite=new Long(0);
+    private Date dateCreation;
 	@OneToMany(mappedBy="stockable")
 	private Collection<FactureStockable> FactureStockables=new HashSet<FactureStockable>();
 
@@ -45,18 +46,12 @@ public class Stockable implements Serializable {
 	public Stockable() {
 		
 	}
-	public Stockable(String name,  Double tva,Magasin magasin, String refStockable) {
+	public Stockable(String name,Magasin magasin,Date dateCreation ,String refStockable) {
 		this.name = name;
-		this.tva=tva;
 		this.magasin=magasin;
+		this.dateCreation=dateCreation;
 		this.refStockable=refStockable;
 	
-	}
-	public Double getTva() {
-		return tva;
-	}
-	public void setTva(Double tva) {
-		this.tva = tva;
 	}
 	public String getName() {
 		return name;
@@ -73,7 +68,18 @@ public class Stockable implements Serializable {
 	public void setRefStockable(String refStockable) {
 		this.refStockable = refStockable;
 	}
-
+	public Long getQuantite() {
+		return quantite;
+	}
+	public void setQuantite(Long quantite) {
+		this.quantite = quantite;
+	}
+	public Date getDateCreation() {
+		return dateCreation;
+	}
+	public void setDateCreation(Date dateCreation) {
+		this.dateCreation = dateCreation;
+	}
 	public Magasin getMagasin()
 	{
 		return magasin;

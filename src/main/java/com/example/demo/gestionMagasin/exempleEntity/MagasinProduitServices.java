@@ -124,8 +124,37 @@ public class MagasinProduitServices {
 		produit.setProprites(uproduit.getProprites());
 		produit.getProprites().forEach(p->p.setProduit(produit)); 
 		produit.setName(uproduit.getName());
-		produit.setTva(uproduit.getTva());	
+		produit.setQuantite(uproduit.getQuantite());
+		produit.setDateCreation(uproduit.getDateCreation());
 		produit.setRefStockable(uproduit.getRefStockable());
+		Produit pp=ProduitDao.save( produit); 
+		respJsonOutput.put("status", 1);
+
+	    respJsonOutput.put("message", "Record is Updated Successfully!");
+	    respJsonOutput.put("Body",pp);
+	    return new ResponseEntity < > (respJsonOutput, HttpStatus.OK);
+		
+		        
+		
+		 }
+		 catch(NoSuchElementException e){
+			  respJsonOutput.put("status", 0);
+
+		      respJsonOutput.put("message", "produit not found with id"+id);
+
+		      return new ResponseEntity < > (respJsonOutput, HttpStatus.NOT_FOUND);
+			
+			 
+		 }
+	}
+	public ResponseEntity < ? > UpdateQuantiteProduit(Produit uproduit,Long id)
+	{
+		Map < String, Object > respJsonOutput = new LinkedHashMap < String, Object > ();
+		 try {
+		Optional<Produit> oProduit =  ProduitDao.findById(id); 
+		Produit produit = oProduit.get(); 
+		
+		produit.setQuantite(uproduit.getQuantite());
 		Produit pp=ProduitDao.save( produit); 
 		respJsonOutput.put("status", 1);
 

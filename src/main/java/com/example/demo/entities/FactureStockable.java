@@ -23,6 +23,7 @@ public class FactureStockable implements Serializable {
 	@Column(length=100)
 	private Long quantite;
 	private Double prix;
+	private Double tva;
 
 	@ManyToOne
 	@JoinColumn(name="stockable")
@@ -34,10 +35,10 @@ public class FactureStockable implements Serializable {
 	public FactureStockable() {
 		
 	}
-	public FactureStockable(Long quantite, Double prix,Produit stockable,Facture facture) {
+	public FactureStockable(Long quantite, Double prix, Double tva,Produit stockable,Facture facture) {
 		this.quantite = quantite;
 		this.prix = prix;
-
+        this.tva=tva;
 		this.stockable=stockable;
 		this.facture=facture;
 	}
@@ -53,7 +54,12 @@ public class FactureStockable implements Serializable {
 	public void setPrix(Double prix) {
 		this.prix = prix;
 	}
-
+	public Double getTva() {
+		return tva;
+	}
+	public void setTva(Double tva) {
+		this.tva = tva;
+	}
 	public Produit getStockable() {
 		return stockable;
 	}

@@ -3,6 +3,7 @@ package com.example.demo.entities;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 
 import jakarta.persistence.Entity;
@@ -18,9 +19,9 @@ public class Produit extends Stockable   {
 	public Produit() {
 		
 	}
-	public Produit(String name, Double tva, Magasin magasin, String refStockable)
+	public Produit(String name, Magasin magasin,Date dateCreation ,String refStockable)
 	{
-		super(name,tva,magasin,refStockable);
+		super(name,magasin,dateCreation,refStockable);
 		
 		
 	}

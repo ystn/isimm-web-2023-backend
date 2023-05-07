@@ -46,6 +46,11 @@ public class MagasinProduitController {
 	{
 		return ProduitServices.UpdateProduit(uproduit, id);
 	}
+	@PutMapping(value="/UpdateQuantite/{id}")
+	public ResponseEntity < ? > UpdateQuantiteProduit(@RequestBody Produit uproduit,@PathVariable("id") Long id)
+	{
+		return ProduitServices.UpdateQuantiteProduit(uproduit, id);
+	}
 	@PutMapping(value="/AddProprite/{id}")
 	public void addProprites(@RequestBody Proprite proprite ,@PathVariable("id") Long id  )
 	{

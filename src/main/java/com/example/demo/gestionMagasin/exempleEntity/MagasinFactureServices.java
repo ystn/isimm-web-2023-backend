@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.hibernate.boot.jaxb.internal.stax.JpaOrmXmlEventReader.BadVersionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -101,6 +102,57 @@ public class MagasinFactureServices {
 		 try {
 		Optional<Facture> oFacture =  FactureDao.findById(id); 
 		Facture  facture = oFacture.get(); 
+		try{
+			ufacture.getFactureStockables().forEach(ff->{
+				respJsonOutput.clear();
+			      respJsonOutput.put("ff",ff.getStockable().getIdStockable() );
+			Produit p=ProduitDao.findById(ff.getStockable().getIdStockable()).get();		
+		
+				if(p.getRefStockable().equals(ff.getStockable().getRefStockable()))
+				{
+			
+				}
+				else {
+					respJsonOutput.clear();
+
+				      respJsonOutput.put("status", 0);
+
+				      respJsonOutput.put("message", "produit ref and id are not compatible");
+
+				      throw new RuntimeException("produit ref and id are not compatible");
+				}
+			
+			
+				
+			});
+			}catch(Exception e)
+			{
+				if(e.getMessage().equals("No value present")){
+
+					String s="produit not found with id:"+respJsonOutput.get("ff");
+					respJsonOutput.clear();
+				      respJsonOutput.put("status", 0);
+
+				      respJsonOutput.put("message", s);
+				}
+				
+				
+				
+				return new ResponseEntity < > (respJsonOutput, HttpStatus.NOT_FOUND);
+			}
+		try{
+			Fournisseur f= FournisseurDao.findById(ufacture.getFournisseur().getIdFournisseur()).get();
+
+			}
+			catch(Exception e){
+				respJsonOutput.clear();
+
+			      respJsonOutput.put("status", 0);
+
+			      respJsonOutput.put("message", "fournisseur not found with id : "+ufacture.getFournisseur().getIdFournisseur());
+
+			      return new ResponseEntity < > (respJsonOutput, HttpStatus.NOT_FOUND);
+			}
 		facture.getFactureStockables().forEach(ff->{
 			ff.getStockable().getFactureStockables().remove(ff);
 			ff.setStockable(null);
@@ -109,40 +161,31 @@ public class MagasinFactureServices {
 		
 
 		facture.getFactureStockables().forEach(ff->FactureStockableDao.delete(ff));
+	
 		ufacture.getFactureStockables().forEach(ff->{
-		Produit p=ProduitDao.findByRefStockable(ff.getStockable().getRefStockable());
-		
-		if(p!=null)
-		{
-			p.getFactureStockables().add(ff);
-			ff.setStockable(p);
-		}
-		else {
 			respJsonOutput.clear();
-
-		      respJsonOutput.put("status", 0);
-
-		      respJsonOutput.put("message", "produit not found with ref"+ff.getStockable().getRefStockable());
-
-			new Exception();
-		}});
+		      respJsonOutput.put("ff",ff.getStockable().getIdStockable() );
+		Produit p=ProduitDao.findById(ff.getStockable().getIdStockable()).get();		
+	
+			if(p.getRefStockable().equals(ff.getStockable().getRefStockable()))
+			{
+			p.getFactureStockables().add(ff);
+			p.setQuantite(ff.getQuantite());
+			ff.setStockable(p);
+			}
+		
+		
+			
+		});
+		
 		ufacture.getFactureStockables().forEach(ff->FactureStockableDao.save(ff));
 		facture.setFactureStockables(ufacture.getFactureStockables());
 		facture.getFactureStockables().forEach(ff->ff.setFacture(facture));
-		try{
+		
 		Fournisseur f= FournisseurDao.findById(ufacture.getFournisseur().getIdFournisseur()).get();
 			facture.setFournisseur(f);
 
-		}
-		catch(Exception e){
-			respJsonOutput.clear();
-
-		      respJsonOutput.put("status", 0);
-
-		      respJsonOutput.put("message", "fournisseur not found with id : "+ufacture.getFournisseur().getIdFournisseur());
-
-		      return new ResponseEntity < > (respJsonOutput, HttpStatus.NOT_FOUND);
-		}
+		
 		facture.setAddressFacturation(ufacture.getAddressFacturation());
 		facture.setDateFacturation(ufacture.getDateFacturation());
 		Facture ffe=FactureDao.save(facture);
@@ -170,24 +213,46 @@ public class MagasinFactureServices {
 		Fournisseur f= FournisseurDao.findById(facture.getFournisseur().getIdFournisseur()).get();
 		try {
 			facture.getFactureStockables().forEach(ff->{
+				respJsonOutput.clear();
+			      respJsonOutput.put("ff",ff.getStockable().getIdStockable() );
+				Produit p=ProduitDao.findById(ff.getStockable().getIdStockable()).get();
 				
-				Produit p=ProduitDao.findByRefStockable(ff.getStockable().getRefStockable());
+					
+					if(p.getRefStockable().equals(ff.getStockable().getRefStockable()))
+						
+					{
+					
+					}
+					else {
+						
+						respJsonOutput.clear();
+
+					      respJsonOutput.put("status", 0);
+
+					      respJsonOutput.put("message", "produit ref and id are not compatible");
+                              throw new RuntimeException("produit ref and id are not compatible");
+					}
+					
 			
-				if(p!=null)
-				{
-					p.getFactureStockables().add(ff);
-					ff.setStockable(p);
-				}
-				else {
-					respJsonOutput.clear();
-
-				      respJsonOutput.put("status", 0);
-
-				      respJsonOutput.put("message", "produit not found with ref"+ff.getStockable().getRefStockable());
-
-					new Exception();
-				}
+				});
+		
+		
+			facture.getFactureStockables().forEach(ff->{
+				respJsonOutput.clear();
+			      respJsonOutput.put("ff",ff.getStockable().getIdStockable() );
+				Produit p=ProduitDao.findById(ff.getStockable().getIdStockable()).get();
 				
+					
+					if(p.getRefStockable().equals(ff.getStockable().getRefStockable()))
+						
+					{
+					p.getFactureStockables().add(ff);
+					p.setQuantite(ff.getQuantite());
+					ff.setStockable(p);
+					}
+					
+					
+			
 				});
 			facture.setFournisseur(f);
 			facture.getFactureStockables().forEach(ff->FactureStockableDao.save(ff));
@@ -195,13 +260,26 @@ public class MagasinFactureServices {
 		}catch(Exception e)
 		{
 			System.out.println(e.getMessage());
-			return new ResponseEntity < > (respJsonOutput, HttpStatus.NOT_FOUND);
+			if(e.getMessage().equals("No value present")){
 
+				String s="produit not found with id:"+respJsonOutput.get("ff");
+				respJsonOutput.clear();
+			      respJsonOutput.put("status", 0);
+
+			      respJsonOutput.put("message", s);
+			}
 			
+			System.out.println(e.getMessage());
+			System.out.println(respJsonOutput.get("message"));
+			
+			return new ResponseEntity < > (respJsonOutput, HttpStatus.NOT_FOUND);
 		}
+		
+			
 			
 		}
 		catch(Exception e) {
+
 			respJsonOutput.clear();
 
 		      respJsonOutput.put("status", 0);
@@ -210,6 +288,8 @@ public class MagasinFactureServices {
 
 		      return new ResponseEntity < > (respJsonOutput, HttpStatus.NOT_FOUND);
 		}
+		System.out.println(respJsonOutput.get("message"));
+
 		 Facture ffe=FactureDao.save( facture);
 		respJsonOutput.put("status", 1);
 

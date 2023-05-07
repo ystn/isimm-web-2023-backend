@@ -17,6 +17,7 @@ import com.example.demo.Doa.EmployerRepository;
 import com.example.demo.Doa.ProduitRepository;
 import com.example.demo.Doa.ServiceRepository;
 import com.example.demo.entities.DemandeStockable;
+import com.example.demo.entities.DemandeStockable.Etat;
 import com.example.demo.entities.Employer;
 import com.example.demo.entities.Facture;
 import com.example.demo.entities.Fournisseur;
@@ -40,13 +41,14 @@ public class MagasinDemandeStockableServices {
 	private EmployerRepository EmployerDao  ;
 	public ResponseEntity < ? > getAllDemandeStockables() {
 		Map < String, Object > respJsonOutput = new LinkedHashMap < String, Object > ();
-		List<DemandeStockable> DemandeStockables =  DemandeStockableDao.findAll();  
-		if(!DemandeStockables.isEmpty())
+		List<DemandeStockable> DemandeStockables =  DemandeStockableDao.findAll(); 
+		List<DemandeStockable> DemandeStockablesService=DemandeStockables.stream().filter(d->d.getService()!=null).toList();
+		if(!DemandeStockablesService.isEmpty())
 		{
 			respJsonOutput.put("status", 1);
 
 		    respJsonOutput.put("message", "Records fetched Successfully!");
-		    respJsonOutput.put("Body",DemandeStockables );
+		    respJsonOutput.put("Body",DemandeStockablesService );
 
 		    
 		return new ResponseEntity < > (respJsonOutput, HttpStatus.OK);
@@ -58,7 +60,7 @@ public class MagasinDemandeStockableServices {
 		      respJsonOutput.put("status", 0);
 
 		      respJsonOutput.put("message", "There is No Demandes Data exists ");
-		      respJsonOutput.put("Body",DemandeStockables );
+		      respJsonOutput.put("Body",DemandeStockablesService );
 
 		      return new ResponseEntity < > (respJsonOutput, HttpStatus.NOT_FOUND);
 			
@@ -108,35 +110,46 @@ public class MagasinDemandeStockableServices {
 	}
 	public ResponseEntity < ? > addDemandeStockable( DemandeStockable  demandeStockable) {
 		Map < String, Object > respJsonOutput = new LinkedHashMap < String, Object > ();
-	    try {
+		try {
 	    	
 			 demandeStockable.getDemandeUnStockables().forEach(dd->{
-					Produit p=ProduitDao.findByRefStockable(dd.getStockable().getRefStockable());
-					if(p!=null)
+				 respJsonOutput.clear();
+			      respJsonOutput.put("dd",dd.getStockable().getIdStockable() );
+					Produit p=ProduitDao.findById(dd.getStockable().getIdStockable()).get();
+					
+					if(p.getRefStockable().equals(dd.getStockable().getRefStockable()))
 					{
-						p.getDemandes().add(dd);
-						dd.setStockable(p);
-						
+						if(demandeStockable.getEtat()==Etat.approved)
+						{
+							if(p.getQuantite()>=dd.getQuantite()  ) {
+							
+							}
+							else {
+								  throw new RuntimeException("produit quantite inferieur au demande quantite pour produit"+dd.getStockable().getIdStockable());
+							}
+						}
+					
 					}
 					else {
 						respJsonOutput.clear();
 
 					      respJsonOutput.put("status", 0);
 
-					      respJsonOutput.put("message", "produit not found with ref"+dd.getStockable().getRefStockable());
+					      respJsonOutput.put("message", "produit ref and id are not compatible");
 
-						new Exception();
+					      throw new RuntimeException("produit ref and id are not compatible");
 					}
-
+				
+						
+						
+					
+						
 			 });
 			 try {
 			 if(demandeStockable.getService()!=null)
 			 {
-				 System.out.println("ssssssefefefefefefege"+demandeStockable.getService().getIdService());
 				 com.example.demo.entities.Service s=ServiceDao.findById(demandeStockable.getService().getIdService()).get();
-				 System.out.println("ssssssessssssssscccccccccc"+s.getIdService());
-				 s.addDemandeStockable(demandeStockable);
-				 demandeStockable.setService(s);
+				 
 			 }
 			 }catch(Exception e){
 					respJsonOutput.clear();
@@ -152,8 +165,7 @@ public class MagasinDemandeStockableServices {
 			 {
 			        	  
 				 Employer e=EmployerDao.findById( demandeStockable.getEmployer().getId()).get();
-				 e.getDemandeStockable().add(demandeStockable);
-				 demandeStockable.setEmployer(e);
+				
 			 }
 				}
 				catch(Exception e){
@@ -165,16 +177,75 @@ public class MagasinDemandeStockableServices {
 
 				      return new ResponseEntity < > (respJsonOutput, HttpStatus.NOT_FOUND);
 				}
-			 demandeStockable.getDemandeUnStockables().forEach(dd->DemandeUnStockableDao.save(dd));
-			 demandeStockable.getDemandeUnStockables().forEach(dd->dd.setDemandeStockable(demandeStockable));
-			
+			 
 		}catch(Exception e)
 		{
+			if(e.getMessage().equals("No value present")){
+			String s="produit not found with id:"+respJsonOutput.get("dd");
+			respJsonOutput.clear();
+		      respJsonOutput.put("status", 0);
+
+		      respJsonOutput.put("message", s);
+			}
+			if(e.getMessage().equals("produit quantite inferieur au demande quantite"))
+			{
+				respJsonOutput.clear();
+			      respJsonOutput.put("status", 0);
+
+			      respJsonOutput.put("message", e.getMessage());
+			}
 			System.out.println(e.getMessage());
 			return new ResponseEntity < > (respJsonOutput, HttpStatus.NOT_FOUND);
 
 			
 		}
+	   
+	    	
+			 demandeStockable.getDemandeUnStockables().forEach(dd->{
+				 respJsonOutput.clear();
+			      respJsonOutput.put("dd",dd.getStockable().getIdStockable() );
+					Produit p=ProduitDao.findById(dd.getStockable().getIdStockable()).get();
+					
+					if(p.getRefStockable().equals(dd.getStockable().getRefStockable()))
+					{
+						if(demandeStockable.getEtat()==Etat.approved)
+						{
+							if(p.getQuantite()>=dd.getQuantite()  ) {
+							p.setQuantite(p.getQuantite()-dd.getQuantite());
+							}
+							
+						}
+						p.getDemandes().add(dd);
+						dd.setStockable(p);
+					
+					}
+					
+						
+						
+					
+						
+			 });
+			
+			 if(demandeStockable.getService()!=null)
+			 {
+				 com.example.demo.entities.Service s=ServiceDao.findById(demandeStockable.getService().getIdService()).get();
+				 s.addDemandeStockable(demandeStockable);
+				 demandeStockable.setService(s);
+			 }
+			 
+				
+			          if(demandeStockable.getEmployer()!=null)
+			 {
+			        	  
+				 Employer e=EmployerDao.findById( demandeStockable.getEmployer().getId()).get();
+				 e.getDemandeStockable().add(demandeStockable);
+				 demandeStockable.setEmployer(e);
+			 }
+				
+			 demandeStockable.getDemandeUnStockables().forEach(dd->DemandeUnStockableDao.save(dd));
+			 demandeStockable.getDemandeUnStockables().forEach(dd->dd.setDemandeStockable(demandeStockable));
+			
+		
 			
 		
 	    DemandeStockable dde=DemandeStockableDao.save(demandeStockable);
@@ -194,7 +265,93 @@ public class MagasinDemandeStockableServices {
 	
 		
 		 Optional<DemandeStockable> oDemandeStockable =  DemandeStockableDao.findById(id); 
-			DemandeStockable  demandeStockable = oDemandeStockable.get(); 
+			DemandeStockable  demandeStockable = oDemandeStockable.get();
+			 try {
+					udemandeStockable.getDemandeUnStockables().forEach(dd->{
+						respJsonOutput.clear();
+					      respJsonOutput.put("dd",dd.getStockable().getIdStockable() );
+					Produit p=ProduitDao.findById(dd.getStockable().getIdStockable()).get();	
+					if(p.getRefStockable().equals(dd.getStockable().getRefStockable()))
+					{
+						if(udemandeStockable.getEtat()==Etat.approved)
+						{
+							if(p.getQuantite()>=dd.getQuantite()  ) {
+							}
+							else {
+								  throw new RuntimeException("produit quantite inferieur au demande quantite");
+							}
+						}
+						
+					
+					}
+					else {
+						respJsonOutput.clear();
+
+					      respJsonOutput.put("status", 0);
+
+					      respJsonOutput.put("message", "produit ref and id are not compatible");
+
+					      throw new RuntimeException("produit ref and id are not compatible");
+					}
+				
+					});
+				 }catch(Exception e)
+					{
+						if(e.getMessage().equals("No value present")){
+						String s="produit not found with id:"+respJsonOutput.get("dd");
+						respJsonOutput.clear();
+					      respJsonOutput.put("status", 0);
+
+					      respJsonOutput.put("message", s);
+						}
+						if(e.getMessage().equals("produit quantite inferieur au demande quantite"))
+						{
+							respJsonOutput.clear();
+						      respJsonOutput.put("status", 0);
+
+						      respJsonOutput.put("message", e.getMessage());
+						}
+						System.out.println(e.getMessage());
+						return new ResponseEntity < > (respJsonOutput, HttpStatus.NOT_FOUND);
+
+						
+					}
+			 try{
+					if(demandeStockable.getService()!=null)
+					 {
+						 System.out.println("ssssssefefefefefefege"+udemandeStockable.getService().getIdService());
+						 com.example.demo.entities.Service s=ServiceDao.findById(udemandeStockable.getService().getIdService()).get();
+						
+					 }
+
+				}
+				catch(Exception e){
+					respJsonOutput.clear();
+
+				      respJsonOutput.put("status", 0);
+
+				      respJsonOutput.put("message", "service not found with id : "+udemandeStockable.getService().getIdService());
+
+				      return new ResponseEntity < > (respJsonOutput, HttpStatus.NOT_FOUND);
+				}
+				try{
+					if(demandeStockable.getEmployer()!=null)
+					 {
+						 Employer e=EmployerDao.findById( udemandeStockable.getEmployer().getId()).get();
+						
+					 }
+					
+
+				}
+				catch(Exception e){
+					respJsonOutput.clear();
+
+				      respJsonOutput.put("status", 0);
+
+				      respJsonOutput.put("message", "employer not found with id : "+udemandeStockable.getEmployer().getId());
+
+				      return new ResponseEntity < > (respJsonOutput, HttpStatus.NOT_FOUND);
+				}
 			demandeStockable.getDemandeUnStockables().forEach(dd->{
 			dd.getStockable().getDemandes().remove(dd);
 			dd.setStockable(null);
@@ -204,46 +361,24 @@ public class MagasinDemandeStockableServices {
 
 	 demandeStockable.getDemandeUnStockables().forEach(dd->DemandeUnStockableDao.delete(dd));
 		udemandeStockable.getDemandeUnStockables().forEach(dd->{
-		Produit p=ProduitDao.findByRefStockable(dd.getStockable().getRefStockable());
+		Produit p=ProduitDao.findById(dd.getStockable().getIdStockable()).get();		
 		
-		if(p!=null)
-		{
 			p.getDemandes().add(dd);
 			dd.setStockable(p);
-		}
-		else {
-			respJsonOutput.clear();
-
-		      respJsonOutput.put("status", 0);
-
-		      respJsonOutput.put("message", "produit not found with ref"+dd.getStockable().getRefStockable());
-
-			new Exception();
-		}});
+		});
 		udemandeStockable.getDemandeUnStockables().forEach(dd->DemandeUnStockableDao.save(dd));
 		demandeStockable.setDemandeUnStockables(udemandeStockable.getDemandeUnStockables());
 		demandeStockable.getDemandeUnStockables().forEach(dd->dd.setDemandeStockable(demandeStockable));
-		try{
+		
 			if(demandeStockable.getService()!=null)
 			 {
-				 System.out.println("ssssssefefefefefefege"+udemandeStockable.getService().getIdService());
 				 com.example.demo.entities.Service s=ServiceDao.findById(udemandeStockable.getService().getIdService()).get();
-				 System.out.println("ssssssessssssssscccccccccc"+s.getIdService());
 				 s.addDemandeStockable(demandeStockable);
 				 demandeStockable.setService(s);
 			 }
 
-		}
-		catch(Exception e){
-			respJsonOutput.clear();
-
-		      respJsonOutput.put("status", 0);
-
-		      respJsonOutput.put("message", "service not found with id : "+udemandeStockable.getService().getIdService());
-
-		      return new ResponseEntity < > (respJsonOutput, HttpStatus.NOT_FOUND);
-		}
-		try{
+		
+		
 			if(demandeStockable.getEmployer()!=null)
 			 {
 				 Employer e=EmployerDao.findById( udemandeStockable.getEmployer().getId()).get();
@@ -252,16 +387,7 @@ public class MagasinDemandeStockableServices {
 			 }
 			
 
-		}
-		catch(Exception e){
-			respJsonOutput.clear();
-
-		      respJsonOutput.put("status", 0);
-
-		      respJsonOutput.put("message", "employer not found with id : "+udemandeStockable.getEmployer().getId());
-
-		      return new ResponseEntity < > (respJsonOutput, HttpStatus.NOT_FOUND);
-		}
+		
 		demandeStockable.setDescription(udemandeStockable.getDescription());
 		demandeStockable.setEtat(udemandeStockable.getEtat());
 		 DemandeStockable dde=DemandeStockableDao.save(demandeStockable);
