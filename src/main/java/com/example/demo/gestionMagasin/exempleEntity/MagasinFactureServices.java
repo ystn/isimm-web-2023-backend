@@ -154,12 +154,11 @@ public class MagasinFactureServices {
 		      respJsonOutput.put("ff",ff.getStockable().getIdStockable() );
 		Produit p=ProduitDao.findById(ff.getStockable().getIdStockable()).get();		
 	
-			if(p.getRefStockable().equals(ff.getStockable().getRefStockable()))
-			{
+			
 			p.getFactureStockables().add(ff);
 			p.setQuantite(ff.getQuantite());
 			ff.setStockable(p);
-			}
+			
 		
 		
 			
