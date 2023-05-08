@@ -117,8 +117,8 @@ public class MagasinDemandeStockableServices {
 			      respJsonOutput.put("dd",dd.getStockable().getIdStockable() );
 					Produit p=ProduitDao.findById(dd.getStockable().getIdStockable()).get();
 					
-					if(p.getRefStockable().equals(dd.getStockable().getRefStockable()))
-					{
+					
+					
 						if(demandeStockable.getEtat()==Etat.approved)
 						{
 							if(p.getQuantite()>=dd.getQuantite()  ) {
@@ -129,17 +129,7 @@ public class MagasinDemandeStockableServices {
 							}
 						}
 					
-					}
-					else {
-						respJsonOutput.clear();
-
-					      respJsonOutput.put("status", 0);
-
-					      respJsonOutput.put("message", "produit ref and id are not compatible");
-
-					      throw new RuntimeException("produit ref and id are not compatible");
-					}
-				
+					
 						
 						
 					
@@ -206,8 +196,7 @@ public class MagasinDemandeStockableServices {
 			      respJsonOutput.put("dd",dd.getStockable().getIdStockable() );
 					Produit p=ProduitDao.findById(dd.getStockable().getIdStockable()).get();
 					
-					if(p.getRefStockable().equals(dd.getStockable().getRefStockable()))
-					{
+					
 						if(demandeStockable.getEtat()==Etat.approved)
 						{
 							if(p.getQuantite()>=dd.getQuantite()  ) {
@@ -218,7 +207,7 @@ public class MagasinDemandeStockableServices {
 						p.getDemandes().add(dd);
 						dd.setStockable(p);
 					
-					}
+					
 					
 						
 						
@@ -271,8 +260,7 @@ public class MagasinDemandeStockableServices {
 						respJsonOutput.clear();
 					      respJsonOutput.put("dd",dd.getStockable().getIdStockable() );
 					Produit p=ProduitDao.findById(dd.getStockable().getIdStockable()).get();	
-					if(p.getRefStockable().equals(dd.getStockable().getRefStockable()))
-					{
+					
 						if(udemandeStockable.getEtat()==Etat.approved)
 						{
 							if(p.getQuantite()>=dd.getQuantite()  ) {
@@ -283,17 +271,7 @@ public class MagasinDemandeStockableServices {
 						}
 						
 					
-					}
-					else {
-						respJsonOutput.clear();
-
-					      respJsonOutput.put("status", 0);
-
-					      respJsonOutput.put("message", "produit ref and id are not compatible");
-
-					      throw new RuntimeException("produit ref and id are not compatible");
-					}
-				
+					
 					});
 				 }catch(Exception e)
 					{

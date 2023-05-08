@@ -108,33 +108,20 @@ public class MagasinFactureServices {
 			      respJsonOutput.put("ff",ff.getStockable().getIdStockable() );
 			Produit p=ProduitDao.findById(ff.getStockable().getIdStockable()).get();		
 		
-				if(p.getRefStockable().equals(ff.getStockable().getRefStockable()))
-				{
-			
-				}
-				else {
-					respJsonOutput.clear();
-
-				      respJsonOutput.put("status", 0);
-
-				      respJsonOutput.put("message", "produit ref and id are not compatible");
-
-				      throw new RuntimeException("produit ref and id are not compatible");
-				}
-			
+				
 			
 				
 			});
 			}catch(Exception e)
 			{
-				if(e.getMessage().equals("No value present")){
+				
 
 					String s="produit not found with id:"+respJsonOutput.get("ff");
 					respJsonOutput.clear();
 				      respJsonOutput.put("status", 0);
 
 				      respJsonOutput.put("message", s);
-				}
+				
 				
 				
 				
@@ -218,20 +205,7 @@ public class MagasinFactureServices {
 				Produit p=ProduitDao.findById(ff.getStockable().getIdStockable()).get();
 				
 					
-					if(p.getRefStockable().equals(ff.getStockable().getRefStockable()))
-						
-					{
 					
-					}
-					else {
-						
-						respJsonOutput.clear();
-
-					      respJsonOutput.put("status", 0);
-
-					      respJsonOutput.put("message", "produit ref and id are not compatible");
-                              throw new RuntimeException("produit ref and id are not compatible");
-					}
 					
 			
 				});
@@ -243,13 +217,11 @@ public class MagasinFactureServices {
 				Produit p=ProduitDao.findById(ff.getStockable().getIdStockable()).get();
 				
 					
-					if(p.getRefStockable().equals(ff.getStockable().getRefStockable()))
-						
-					{
+				
 					p.getFactureStockables().add(ff);
 					p.setQuantite(ff.getQuantite());
 					ff.setStockable(p);
-					}
+					
 					
 					
 			
@@ -260,14 +232,14 @@ public class MagasinFactureServices {
 		}catch(Exception e)
 		{
 			System.out.println(e.getMessage());
-			if(e.getMessage().equals("No value present")){
+			
 
 				String s="produit not found with id:"+respJsonOutput.get("ff");
 				respJsonOutput.clear();
 			      respJsonOutput.put("status", 0);
 
 			      respJsonOutput.put("message", s);
-			}
+			
 			
 			System.out.println(e.getMessage());
 			System.out.println(respJsonOutput.get("message"));
